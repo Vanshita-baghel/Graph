@@ -1,0 +1,39 @@
+PROBLEM STATEMENT:
+There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, and city b is connected directly with city c, then city a is connected indirectly with city c.
+
+A province is a group of directly or indirectly connected cities and no other cities outside of the group.
+
+You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith city and the jth city are directly connected, and isConnected[i][j] = 0 otherwise.
+
+Return the total number of provinces.
+
+SOLUTION:
+                                                                          APPROACH : USING dfs
+                                                                          TIME COMPLEXITY:  O(n²)
+                                                                          SPACE COMPLEXITY: O(n)
+
+class Solution {
+    //dfs
+    public int findCircleNum(int[][] isConnected) {
+        int n= isConnected.length;
+        int cnt=0;
+
+        boolean[] vis= new boolean[n+1];
+        for(int i=1; i<=n; i++){
+            if(!vis[i]){
+                cnt++;
+                dfs(i, vis, isConnected, n);
+            }
+        }
+        return cnt;
+    }
+
+    public void dfs(int i, boolean[] vis, int[][] adj, int n){
+        vis[i]= true;
+        for(int j=1; j<=n; j++){
+            if(i!=j && adj[i-1][j-1]==1 && vis[j]== false){
+                dfs(j, vis, adj, n);
+            }
+        }
+    }
+}
