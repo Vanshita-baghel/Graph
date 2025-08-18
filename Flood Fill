@@ -1,0 +1,44 @@
+PROBLEM STATEMENT:
+You are given an image represented by an m x n grid of integers image, where image[i][j] represents the pixel value of the image. You are also given three integers sr, sc, and color. Your task is to perform a flood fill on the image starting from the pixel image[sr][sc].
+
+To perform a flood fill:
+
+Begin with the starting pixel and change its color to color.
+Perform the same process for each pixel that is directly adjacent (pixels that share a side with the original pixel, either horizontally or vertically) and shares the same color as the starting pixel.
+Keep repeating this process by checking neighboring pixels of the updated pixels and modifying their color if it matches the original color of the starting pixel.
+The process stops when there are no more adjacent pixels of the original color to update.
+Return the modified image after performing the flood fill.
+
+SOLUTION:
+
+                                                                                          TIME COMPLEXITY:  O(m * n)
+                                                                                          SPACE COMPLEXITY: O(m * n)
+class Solution {
+    //usind dfs
+    public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+
+        int m= image.length;
+        int n= image[0].length;
+        int iniColor= image[sr][sc];
+        int[][] ans= new int[m][n];
+        for(int i=0; i<image.length; i++){
+            for(int j=0; j<image[0].length; j++){
+                ans[i][j]= image[i][j];
+            }
+        }   
+        int[] drow= {-1,0,1,0};
+        int[] dcol= {0,1,0,-1};
+        return dfs(sr, sc, image, ans, color, iniColor, drow, dcol, m, n);
+    }
+    public int[][] dfs(int row, int col, int[][] image, int[][] ans, int newColor, int iniColor, int[] drow, int[] dcol, int m, int n){
+        ans[row][col] = newColor;
+        for(int i=0; i<4; i++){
+            int newRow= row+drow[i];
+            int newCol= col+dcol[i];
+            if(newRow>=0 && newRow<m && newCol>=0 && newCol<n && image[newRow][newCol]==iniColor && ans[newRow][newCol]!= newColor){
+                dfs(newRow, newCol, image, ans, newColor, iniColor, drow, dcol, m, n);
+            }
+        }
+        return ans;
+    }
+}
