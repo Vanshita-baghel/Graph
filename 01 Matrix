@@ -1,0 +1,60 @@
+PROBLEM STATEMENT:
+Given an m x n binary matrix mat, return the distance of the nearest 0 for each cell.
+
+The distance between two cells sharing a common edge is 1.
+
+SOLUTION:
+
+                                                                              APPROACH : using bfs
+                                                                                TIME COMPLEXITY: O(m*n)
+                                                                                SPACE COMPLEXITY: O(m*n)
+class Solution {
+    //bfs
+    public int[][] updateMatrix(int[][] mat) {
+        int m= mat.length;
+        int n= mat[0].length;
+        boolean vis[][]= new boolean[m][n];
+        int[][] res= new int[m][n];
+
+        Queue<Pair> q= new LinkedList<>();
+
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                if(mat[i][j]== 0){
+                    q.add(new Pair(i,j,0));
+                    vis[i][j]= true;
+                }
+            }
+        }
+        int[] drow= {-1,0,1,0};
+        int[] dcol= {0,1,0,-1};
+
+        while(!q.isEmpty()){
+            Pair node= q.poll();
+            int row= node.row;
+            int col= node.col;
+            int dist= node.dist;
+            res[row][col]=dist;
+            for(int i=0; i<4; i++){
+                int nRow= row+drow[i];
+                int nCol= col+dcol[i];
+                int nDist= dist+1;
+                if(nRow>=0 && nCol>=0 && nRow<m && nCol<n && vis[nRow][nCol]!= true){
+                    q.add(new Pair(nRow, nCol, nDist));
+                    vis[nRow][nCol]= true;
+                }
+            }
+        }
+        return res;
+    }
+}
+class Pair{
+    int row;
+    int col;
+    int dist;
+    Pair(int row, int col, int dist){
+        this.row= row;
+        this.col= col;
+        this.dist= dist;
+    }
+}
