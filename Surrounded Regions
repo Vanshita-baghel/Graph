@@ -1,0 +1,58 @@
+PROBLEM STATEMENT:
+You are given an m x n matrix board containing letters 'X' and 'O', capture regions that are surrounded:
+
+Connect: A cell is connected to adjacent cells horizontally or vertically.
+Region: To form a region connect every 'O' cell.
+Surround: The region is surrounded with 'X' cells if you can connect the region with 'X' cells and none of the region cells are on the edge of the board.
+To capture a surrounded region, replace all 'O's with 'X's in-place within the original board. You do not need to return anything.
+
+SOLUTION:
+                                                                          TIME COMPLEXITY: O(m*n) 
+                                                                          SPACE COMPLEXITY: O(m*n)
+
+
+class Solution {
+    //using dfs
+    public void solve(char[][] board) {
+        int m= board.length;
+        int n= board[0].length;
+
+        boolean[][] vis= new boolean[m][n];
+        int[] drow= {-1, 0, 1, 0};
+        int[] dcol= {0, 1, 0, -1};
+
+        for(int i=0; i<n; i++){
+            if(board[0][i]== 'O')   dfs(0,i,board,vis, drow,dcol);
+        }
+        for(int i=0; i<m; i++){
+            if(board[i][n-1]== 'O')   dfs(i,n-1,board,vis, drow,dcol);
+        }
+        for(int i=0; i<n; i++){
+            if(board[m-1][i]== 'O')   dfs(m-1,i,board,vis, drow,dcol);
+        }
+        for(int i=1; i<m; i++){
+            if(board[i][0]== 'O')   dfs(i,0,board,vis, drow,dcol);
+        }
+
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                if(vis[i][j]!= true){
+                    board[i][j]= 'X';
+                }
+            }
+        }
+    }
+    public void dfs(int row, int col, char[][] mat, boolean[][] vis, int[] drow, int[] dcol){
+        vis[row][col]=true;
+        int m= mat.length;
+        int n= mat[0].length;
+        for(int i=0; i<4; i++){
+            int nrow= row + drow[i];
+            int ncol= col + dcol[i];
+            if(nrow>=0 && ncol>=0 && nrow<m && ncol<n && mat[nrow][ncol]== 'O' && vis[nrow][ncol]== false){
+                dfs(nrow, ncol, mat, vis, drow, dcol);
+            }
+        }   
+
+    }
+}
