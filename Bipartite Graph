@@ -1,0 +1,120 @@
+PROBLEM STATEMENT:
+There is an undirected graph with n nodes, where each node is numbered between 0 and n - 1. You are given a 2D array graph, where graph[u] is an array of nodes that node u is adjacent to. More formally, for each v in graph[u], there is an undirected edge between node u and node v. The graph has the following properties:
+
+There are no self-edges (graph[u] does not contain u).
+There are no parallel edges (graph[u] does not contain duplicate values).
+If v is in graph[u], then u is in graph[v] (the graph is undirected).
+The graph may not be connected, meaning there may be two nodes u and v such that there is no path between them.
+A graph is bipartite if the nodes can be partitioned into two independent sets A and B such that every edge in the graph connects a node in set A and a node in set B.
+
+Return true if and only if it is bipartite.
+
+SOLUTION:
+                                                                                          APPROACH 1:
+                                                                                        TIME COMPLEXITY: O(n + E)
+                                                                                        SPACE COMPLEXITY: O(n)
+
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        HashSet<Integer> A= new HashSet<>();
+        HashSet<Integer> B= new HashSet<>();
+
+        int n= graph.length;
+
+        for(int i=0; i<n; i++){
+            
+            //setting the position of initial node
+            if(!A.contains(i) && !B.contains(i)){
+                boolean assigned= false;
+                for(int neighbour: graph[i]){
+                    if(A.contains(neighbour)){
+                        B.add(i);
+                        assigned= true;
+                        break;
+                    }
+                    else if(B.contains(neighbour)){
+                        A.add(i);
+                        assigned=true;
+                        break;
+                    }
+                }
+
+                if(!assigned){
+                    A.add(i);
+                }
+
+                Queue<Integer> q= new LinkedList<>();
+                q.add(i);
+
+                while(!q.isEmpty()){
+                    int node= q.poll();
+                    if(A.contains(node)){
+                        for(int neighbour: graph[node]){
+                            if(A.contains(neighbour))   return false;
+                            else if(!B.contains(neighbour)){
+                                B.add(neighbour);
+                                q.add(neighbour);
+                            }
+                        }
+                    }
+                    else if(B.contains(node)){
+                        for(int neighbour: graph[node]){
+                            if(B.contains(neighbour))   return false;
+                            else if(!A.contains(neighbour)){
+                                A.add(neighbour);
+                                q.add(neighbour);
+                            }
+                        }
+                    }
+                }
+            
+            }
+
+            
+            
+        }
+
+        return true;
+    }
+
+}
+
+                                                                                          APPROACH 2:
+                                                                                        TIME COMPLEXITY:  O(n + E)
+                                                                                        SPACE COMPLEXITY: O(n)
+
+class Solution {
+    //dfs
+    public boolean isBipartite(int[][] graph) {
+
+        int n= graph.length; 
+
+        int[] vis= new int[n];
+        for(int i=0; i<n; i++){
+            vis[i]= -1;
+        }
+
+        for(int i=0; i<n; i++){
+            if(vis[i]==-1){
+                boolean res= dfs(i,0,vis,graph);
+                if(res==false)  return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean dfs(int i, int color, int[] vis, int[][] graph){
+        vis[i]=color;
+        for(int neighbour: graph[i]){
+            if(vis[neighbour] != -1 && vis[neighbour]==color){
+                return false;
+            }
+            else if(vis[neighbour]  == -1){
+                int ncolor= (color==0)? 1: 0;
+                boolean res= dfs(neighbour, ncolor, vis, graph);
+                if(res== false) return false;
+            }
+        }
+        return true;
+    }
+}
