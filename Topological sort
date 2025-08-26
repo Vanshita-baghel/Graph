@@ -1,0 +1,120 @@
+PROBLEM STATEMENT:
+A Directed Acyclic Graph (DAG) is a directed graph that contains no cycles.
+
+Topological Sorting of DAG is a linear ordering of vertices such that for every directed edge from vertex ‘u’ to vertex ‘v’, vertex ‘u’ comes before ‘v’ in the ordering. Topological Sorting for a graph is not possible if the graph is not a DAG.
+
+Given a DAG consisting of ‘V’ vertices and ‘E’ edges, you need to find out any topological sorting of this DAG. Return an array of size ‘V’ representing the topological sort of the vertices of the given DAG.
+
+For example, Consider the DAG shown in the picture.
+
+SOLUTION:
+
+                                                                                                APPROACH 1: USING DFS
+                                                                                                TIME COMPLEXITY: O(v + e)
+                                                                                                SPACE COMPLEXITY: O(v + e)
+import java.util.* ;
+import java.io.*; 
+public class Solution 
+{
+    //using dfs
+    public static ArrayList<Integer> topologicalSort(ArrayList<ArrayList<Integer>> edges, int v, int e) 
+    {
+        int[] vis= new int[v];
+        Stack<Integer> st= new Stack<>();
+
+        //creating adjacnecy list
+        List<List<Integer>> adj= new ArrayList<>();
+
+        for(int i=0; i<v; i++){
+            adj.add(new ArrayList<>());
+        }
+
+        for(ArrayList<Integer> nodeList: edges){
+            int source= nodeList.get(0);
+            int dest= nodeList.get(1);
+            adj.get(source).add(dest);
+        }
+
+        for(int i=0; i<v; i++){
+            if(vis[i]==0){
+                dfs(i,vis, adj, st);
+            }
+        }
+
+        ArrayList<Integer> result= new ArrayList<>();
+
+        
+        while(!st.isEmpty()){
+            result.add(st.pop());
+        }
+
+        return result;
+    }
+
+    public static void dfs(int node, int[] vis, List<List<Integer>> adj, Stack<Integer> st){
+        vis[node]=1;
+        for(int neighbour: adj.get(node)){
+            if(vis[neighbour]==0){
+                dfs(neighbour,vis,adj,st);
+            }
+        }
+        st.push(node);
+    }
+}
+
+                                                                                                APPROACH 1: USING BFS
+                                                                                                TIME COMPLEXITY: O(n + e)
+                                                                                                SPACE COMPLEXITY: O(n + e)
+import java.util.* ;
+import java.io.*; 
+public class Solution 
+{
+    //using bfs /kahns algorithm
+    public static ArrayList<Integer> topologicalSort(ArrayList<ArrayList<Integer>> edges, int n, int e) 
+    {
+        int[] vis= new int[n];
+        Stack<Integer> st= new Stack<>();
+
+        //creating adjacnecy list
+        List<List<Integer>> adj= new ArrayList<>();
+
+        for(int i=0; i<n; i++){
+            adj.add(new ArrayList<>());
+        }
+
+        for(ArrayList<Integer> nodeList: edges){
+            int source= nodeList.get(0);
+            int dest= nodeList.get(1);
+            adj.get(source).add(dest);
+        }
+
+        int[] inDegree= new int[n];
+
+        Queue<Integer> q= new LinkedList<>();
+
+        for(int i=0; i<n; i++){
+            for(int adjNode: adj.get(i)){
+                inDegree[adjNode]++;
+            }
+        }
+
+        for(int i=0; i<n; i++){
+            if(inDegree[i]==0){
+                q.add(i);
+            }
+        }
+
+        ArrayList<Integer> result= new ArrayList<>();
+        while(!q.isEmpty()){
+            int node= q.poll();
+            for(int neighbour: adj.get(node)){
+                inDegree[neighbour]--;
+                if(inDegree[neighbour]==0)  q.add(neighbour);
+            }
+            result.add(node);
+        }
+
+        return result;
+    }
+
+}
