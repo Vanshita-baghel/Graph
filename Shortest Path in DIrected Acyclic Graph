@@ -1,0 +1,75 @@
+PROBLEM STATEMENT:
+Given a Directed Acyclic Graph of V vertices from 0 to n-1 and a 2D Integer array(or vector) edges[ ][ ] of length E, where there is a directed edge from edge[i][0] to edge[i][1] with a distance of edge[i][2] for all i.
+
+Find the shortest path from src(0) vertex to all the vertices and if it is impossible to reach any vertex, then return -1 for that vertex.
+
+SOLUTION:
+
+// User function Template for Java
+import java.util.*;
+class Solution {
+
+    public int[] shortestPath(int V, int E, int[][] edges) {
+        // Code here
+        //edges= E*3
+        List<List<Pair>> adjList= new ArrayList<>();
+        
+        //preparing adjacency list
+        for(int i=0; i<V; i++){
+            adjList.add(new ArrayList<>());
+        }
+        
+        for(int i=0; i<E; i++){
+            int src= edges[i][0];
+            int dest= edges[i][1];
+            int distance= edges[i][2];
+            adjList.get(src).add(new Pair(dest, distance));
+        }
+        
+        //topo sort
+        Stack<Integer> st= new Stack<>();
+        int[] vis= new int[V];
+        for(int i=0; i<V; i++){
+            if(vis[i]==0)   dfs(i,vis, adjList, st);
+        }
+        
+        //now stack is ready for finding shortest path
+        int[] dist= new int[V];
+        for(int i=0; i<V; i++){
+            dist[i]= Integer.MAX_VALUE;
+        }
+        int src=0;
+        dist[src]=0;
+        while(!st.isEmpty()){
+            int node= st.pop();
+            for(Pair p: adjList.get(node)){
+                int neighbour= p.first;
+                int wt= p.second;
+                if(dist[node] != Integer.MAX_VALUE && dist[node]+wt < dist[neighbour]) dist[neighbour]=dist[node]+wt;
+            }
+        }
+        
+        for(int i=0; i<V; i++){
+            if(dist[i]== Integer.MAX_VALUE) dist[i]=-1;
+        }
+        return dist;
+    }
+    
+    public void dfs(int node, int[] vis, List<List<Pair>> adj, Stack<Integer> st){
+        vis[node]=1;
+        for(Pair p: adj.get(node)){
+            int neighbour= p.first;
+            int dist= p.second;
+            if(vis[neighbour]==0)   dfs(neighbour, vis, adj, st);
+        }
+        st.push(node);
+    }
+}
+class Pair{
+    int first;
+    int second;
+    Pair(int node, int dist){
+        this.first= node;
+        this.second= dist;
+    }
+}
