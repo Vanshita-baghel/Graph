@@ -1,0 +1,60 @@
+PROBLEM STATEMENT:
+Given an undirected, weighted graph with V vertices numbered from 0 to V-1 and E edges, represented by 2d array edges[][], where edges[i]=[u, v, w] represents the edge between the nodes u and v having w edge weight.
+You have to find the shortest distance of all the vertices from the source vertex src, and return an array of integers where the ith element denotes the shortest distance between ith node and source vertex src.
+
+Note: The Graph is connected and doesn't contain any negative weight edge.
+
+SOLUTION:
+
+import java.util.*; 
+class Solution {
+    public int[] dijkstra(int V, int[][] edges, int src) {
+        // code here
+        //preparing adjacency list
+        List<List<Pair>> adjList= new ArrayList<>();
+        for(int i=0; i<V; i++){
+            adjList.add(new ArrayList<>());
+        }
+        for(int i=0; i<edges.length; i++){
+            int source= edges[i][0];
+            int dest= edges[i][1];
+            int distance= edges[i][2];
+            adjList.get(source).add(new Pair(dest, distance));
+        }
+        
+        int[] dist= new int[V];
+        for(int i=0; i<V; i++){
+            dist[i]= Integer.MAX_VALUE;
+        }
+        Queue<Pair> q= new LinkedList<>();
+        q.add(new Pair(src,0));
+        dist[src]=0;
+        
+        while(!q.isEmpty()){
+            Pair mainPair= q.poll();
+            int node= mainPair.first;
+            int distance= mainPair.second;
+            for(Pair nPair: adjList.get(node)){
+                int neighbour= nPair.first;
+                int nDist= nPair.second;
+                if(distance+nDist < dist[neighbour]){
+                    dist[neighbour]= distance+ nDist;
+                    q.add(new Pair(neighbour, dist[neighbour]));
+                }
+            }
+        }
+        
+        for(int i=0; i<V; i++){
+            if(dist[i]== Integer.MAX_VALUE) dist[i]= -1;
+        }
+        return dist;
+    }
+}
+class Pair{
+    int first;
+    int second;
+    Pair(int node, int dist){
+        this.first= node;
+        this.second= dist;
+    }
+}
