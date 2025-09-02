@@ -1,0 +1,65 @@
+PROBLEM STATEMENT:
+You are a hiker preparing for an upcoming hike. You are given heights, a 2D array of size rows x columns, where heights[row][col] represents the height of cell (row, col). You are situated in the top-left cell, (0, 0), and you hope to travel to the bottom-right cell, (rows-1, columns-1) (i.e., 0-indexed). You can move up, down, left, or right, and you wish to find a route that requires the minimum effort.
+
+A route's effort is the maximum absolute difference in heights between two consecutive cells of the route.
+
+Return the minimum effort required to travel from the top-left cell to the bottom-right cell.
+
+SOLUTION:
+
+                                                                                          TIME COMPLEXITY: O((n × m) × log(n × m))
+                                                                                          SPACE COMPLEXITY: O(n × m)
+
+class Solution {
+    public int minimumEffortPath(int[][] heights) {
+
+    int n= heights.length;
+    int m= heights[0].length;
+    PriorityQueue<Pair> pq= new PriorityQueue<Pair>((x,y)-> x.first- y.first);
+    int[][] dist= new int[n][m];
+    int[] drow={-1,0,1,0};
+    int[] dcol={0,1,0,-1};
+    
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            dist[i][j]= Integer.MAX_VALUE;
+        }
+    }
+
+    pq.add(new Pair(0,0,0));
+    dist[0][0]=0;
+
+    while(!pq.isEmpty()){
+        Pair p= pq.poll();
+        int diff= p.first;
+        int row= p.second;
+        int col= p.third;
+        if(row==n-1 && col==m-1)    return diff;
+
+        for(int i=0; i<4; i++){
+            int nrow= row+drow[i];
+            int ncol= col+dcol[i];
+            if(nrow>=0 && ncol>=0 && nrow<n && ncol<m){
+                int newEffort= Math.max(diff, Math.abs(heights[row][col]-heights[nrow][ncol]));
+                if(newEffort<dist[nrow][ncol]){
+                    dist[nrow][ncol]= newEffort;
+                    pq.add(new Pair(newEffort, nrow,ncol));
+                }
+            }
+        }
+    }
+
+    return 0;
+
+    }
+}
+class Pair{
+    int first;
+    int second;
+    int third;
+    Pair(int first, int second, int third){
+        this.first= first;
+        this.second=second;
+        this.third=third;
+    }
+}
