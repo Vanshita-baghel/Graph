@@ -1,0 +1,77 @@
+PROBLEM STATEMENT:
+
+There are n cities connected by some number of flights. You are given an array flights where flights[i] = [fromi, toi, pricei] indicates that there is a flight from city fromi to city toi with cost pricei.
+
+You are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. If there is no such route, return -1.
+
+SOLUTION:
+
+                                                                                            TIME COMPLEXITY: O(k * E)
+                                                                                            SPACE COMPLEXITY: O(k * V + E)
+
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+
+        //prepare adjacency list
+        List<List<Pair>> adjList= new ArrayList<>();
+
+        for(int i=0; i<n; i++){
+            adjList.add(new ArrayList<>());
+        }
+
+        for(int i=0; i<flights.length; i++){
+            int source= flights[i][0];
+            int destination= flights[i][1];
+            int wt= flights[i][2];
+            adjList.get(source).add(new Pair(destination, wt));
+        }
+
+        Queue<Triplet> pq= new LinkedList<>();
+        int[] cost= new int[n];
+
+        for(int i=0; i<n; i++){
+            cost[i]= Integer.MAX_VALUE;
+        }
+
+        cost[src]=0;
+        pq.add(new Triplet(0,src,0));
+
+        while(!pq.isEmpty()){
+            Triplet tp= pq.poll();
+            int stops= tp.stops;
+            int node= tp.node;
+            int price= tp.price;
+
+            if(stops>k) continue;
+            
+            for(Pair p: adjList.get(node)){
+                int adjNode= p.node;
+                int adjPrice= p.price;
+                if(adjPrice+price < cost[adjNode]){
+                    cost[adjNode]= adjPrice+price;
+                    pq.add(new Triplet(stops+1, adjNode, cost[adjNode]));
+                }
+            }
+        }
+
+        return cost[dst]== Integer.MAX_VALUE ? -1 : cost[dst];
+    }
+}
+class Triplet{
+    int stops;
+    int node;
+    int price;
+    Triplet(int first, int second, int third){
+        this.stops= first;
+        this.node= second;
+        this.price= third;
+    }
+}
+class Pair{
+    int node;
+    int price;
+    Pair(int node, int price){
+        this.node= node;
+        this.price= price;
+    }
+}
