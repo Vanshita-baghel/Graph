@@ -1,0 +1,56 @@
+PROBLEM STATEMENT:
+There are n cities numbered from 0 to n-1. Given the array edges where edges[i] = [fromi, toi, weighti] represents a bidirectional and weighted edge between cities fromi and toi, and given the integer distanceThreshold.
+
+Return the city with the smallest number of cities that are reachable through some path and whose distance is at most distanceThreshold, If there are multiple such cities, return the city with the greatest number.
+
+Notice that the distance of a path connecting cities i and j is equal to the sum of the edges' weights along that path.
+
+SOLUTION:
+
+                                                                              APPROACH: USING FLOYD WARSHALL ALGORITHM  
+                                                                              TIME COMPLEXITY: O(n^3)
+                                                                              SPACE COMPLEXITY: O(n^2)
+class Solution {
+    public static final int INF= 1_000_000_00;
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        
+        int[][] dist= new int[n][n];
+        for(int i=0; i<n; i++){
+            Arrays.fill(dist[i], INF);
+            dist[i][i]=0;
+        }
+        for(int i=0; i<edges.length; i++){
+            int u= edges[i][0];
+            int v= edges[i][1];
+            int wt= edges[i][2];
+            dist[u][v]=wt;
+            dist[v][u]=wt;
+        }
+
+        for(int via=0; via<n; via++){
+            for(int i=0; i<n; i++){
+                for(int j=0; j<n; j++){
+                    if(dist[i][via]!=INF && dist[via][j]!=INF && dist[i][via]+dist[via][j] < dist[i][j]){
+                        dist[i][j]= dist[i][via]+dist[via][j];
+                    }
+                }
+            }
+        }
+        int cntMax= n;
+        int city=0;
+        for(int i=0; i<n; i++){
+            int cnt=0;
+            for(int j=0; j<n; j++){
+                if(dist[i][j]<=distanceThreshold){
+                    cnt++;
+                }
+            }
+            if(cnt<=cntMax){
+                cntMax=cnt;
+                city=i;
+            }
+        }
+
+        return city;
+    }
+}
