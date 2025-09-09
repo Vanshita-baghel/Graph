@@ -1,0 +1,94 @@
+PROBLEM STATEMENT:
+Given a weighted, undirected, and connected graph with V vertices and E edges, the task is to find the sum of the weights of the edges in the Minimum Spanning Tree (MST) of the graph using Kruskal's Algorithm. The graph is represented as an edge list edges[][], where edges[i] = [u, v, w] denotes an undirected edge between u and v with weight w.
+
+SOLUTION:
+                                                                                          APPROACH 1: USING DISJOINT SET
+                                                                                          TIME COMPLEXITY: O(E logE)
+                                                                                          SPACE COMPLEXITY: O(V+E)
+
+// User function Template for Java
+import java.util.Collections;
+class Solution {
+    static int kruskalsMST(int V, int[][] edges) {
+        // code here
+        List<Triplet> edge=  new ArrayList<>();
+        
+        for(int i=0; i<edges.length; i++){
+            int u= edges[i][0];
+            int v= edges[i][1];
+            int w= edges[i][2];
+            edge.add(new Triplet(w,u,v));
+        }
+        Collections.sort(edge);
+        
+        DisjointSet dis= new DisjointSet(V);
+        
+        int sum=0;
+        
+        for(int i=0; i<edge.size(); i++){
+            int u= edge.get(i).u;
+            int v= edge.get(i).v;
+            int w= edge.get(i).w;
+            
+            if(dis.findUPar(u)== dis.findUPar(v))   continue;
+            else{
+                dis.unionByRange(u,v);
+                sum+= w;
+            }
+        }
+        
+        return sum;
+    }
+}
+class DisjointSet{
+    List<Integer> parent= new ArrayList<>();
+    List<Integer> rank= new ArrayList<>();
+    
+    public DisjointSet(int n){
+        for(int i=0; i<n; i++){
+            parent.add(i);
+            rank.add(0);
+        }
+    }
+    
+    public int findUPar(int node){
+        if(node==parent.get(node))  return node;
+        int ulp= findUPar(parent.get(node));
+        parent.set(node, ulp);
+        
+        return ulp;
+    }
+    
+    public void unionByRange(int u, int v){
+        int ulp_u= findUPar(u);
+        int ulp_v= findUPar(v);
+        
+        if(ulp_u == ulp_v)  return;
+        
+        if(rank.get(ulp_u) < rank.get(ulp_v)){
+            parent.set(ulp_u, ulp_v);
+        }
+        else if(rank.get(ulp_v)<rank.get(ulp_u)){
+            parent.set(ulp_v, ulp_u);
+        }
+        else{
+            parent.set(ulp_v, ulp_u);
+            int rankU= rank.get(ulp_u);
+            rank.set(ulp_u, rankU+1);
+        }
+    }
+}
+
+class Triplet implements Comparable<Triplet>{
+    int w;
+    int u;
+    int v;
+    Triplet(int w, int u, int v){
+        this.w= w;
+        this.u=u;
+        this.v=v;
+    }
+    public int compareTo(Triplet other){
+        return this.w-other.w;
+    }
+}
