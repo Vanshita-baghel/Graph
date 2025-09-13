@@ -1,0 +1,62 @@
+PROBLEM STATEMENT:
+
+You are given an n x n integer matrix grid where each value grid[i][j] represents the elevation at that point (i, j).
+
+It starts raining, and water gradually rises over time. At time t, the water level is t, meaning any cell with elevation less than equal to t is submerged or reachable.
+
+You can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares individually are at most t. You can swim infinite distances in zero time. Of course, you must stay within the boundaries of the grid during your swim.
+
+Return the minimum time until you can reach the bottom right square (n - 1, n - 1) if you start at the top left square (0, 0).
+
+SOLUTION:
+
+                                                                                      USING DIJKSTRA ALGORITHM
+                                                                                      TIME COMPLEXITY: O(N^2 log N)
+                                                                                      SPACE COMPLEXITY: O(N^2)
+
+class Solution {
+    public int swimInWater(int[][] grid) {
+        int n= grid.length;
+        PriorityQueue<Triplet> pq= new PriorityQueue<>();
+        int[][] vis= new int [n][n];
+        int t=0;
+        pq.add(new Triplet(grid[0][0],0,0));
+        vis[0][0]=1;
+        int[] drow={-1, 0, 1, 0};
+        int[] dcol= {0, 1, 0, -1};
+        while(!pq.isEmpty()){
+            Triplet cur= pq.poll();
+            int curT=cur.time;
+            int curRow= cur.r;
+            int curCol= cur.c;
+            t= Math.max(t,curT);
+            if(curRow== n-1 && curCol==n-1) return t;
+            for(int i=0; i<4; i++){
+                int adjRow= curRow+drow[i];
+                int adjCol= curCol+dcol[i];
+                if(isValid(n,adjRow,adjCol) && vis[adjRow][adjCol]==0){
+                    vis[adjRow][adjCol]=1;
+                    pq.add(new Triplet(grid[adjRow][adjCol], adjRow, adjCol));
+                }
+            }
+        }
+        return -1;
+    }
+    public boolean isValid(int n, int row, int col){
+        if(row>=0 && row<n && col>=0 && col<n)  return true;
+        else    return false;
+    }
+}
+class Triplet implements Comparable<Triplet>{
+    int time;
+    int r;
+    int c;
+    Triplet(int t, int r, int c){
+        this.time= t;
+        this.r= r;
+        this.c=c;
+    }
+    public int compareTo(Triplet x){
+        return this.time- x.time;
+    }
+}
