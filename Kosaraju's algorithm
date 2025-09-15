@@ -1,0 +1,64 @@
+PROBLEM STATEMENT:
+Given an adjacency list, adj of Directed Graph, Find the number of strongly connected components in the graph.
+
+SOLUTION:
+                                                                                          USING KOSARAJU'S ALGORITHM
+                                                                                          TIME COMPLEXITY: O(V+E)
+                                                                                          SPACE COMPLEXITY: O(V+E)
+class Solution {
+    // Function to find number of strongly connected components in the graph.
+    public int kosaraju(ArrayList<ArrayList<Integer>> adj) {
+        // code here
+        int V= adj.size();
+        Stack<Integer> st= new Stack<>();
+        int[] vis= new int[V];
+        //step 1
+        for(int i=0; i<V; i++){
+            if(vis[i]==0){
+                dfs(i, adj, st, vis);
+            }
+        }
+        
+        //step 2: reverse all the edges
+        ArrayList<ArrayList<Integer>> newAdjList= new ArrayList<>();
+        for(int i=0; i<V; i++){
+            newAdjList.add(new ArrayList<>());
+        }
+        for(int i=0; i<V; i++){
+            vis[i]=0;
+            for(Integer it: adj.get(i)){
+                newAdjList.get(it).add(i);
+            }
+        }
+        
+        //step 3: dfs in components
+        int comp=0;
+        while(!st.isEmpty()){
+            int node= st.pop();
+            if(vis[node]==0){
+                comp++;
+                dfs2(node, vis, newAdjList);
+            }
+        }
+        
+        return comp;
+        
+    }
+    public void dfs2(int node , int[] vis, ArrayList<ArrayList<Integer>> newAdjList){
+        vis[node]=1;
+        for(Integer it: newAdjList.get(node)){
+            if(vis[it]==0){
+                dfs2(it, vis, newAdjList);
+            }
+        }
+    }
+    public void dfs(int node, ArrayList<ArrayList<Integer>> adj, Stack<Integer> st, int[] vis){
+        vis[node]=1;
+        for(Integer it: adj.get(node)){
+            if(vis[it]==0){
+                dfs(it, adj, st,vis);
+            }
+        }
+        st.push(node);
+    }
+}
